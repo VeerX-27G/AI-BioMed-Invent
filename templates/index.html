@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AIML.CN — AI/ML Innovations Inc.</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body class="min-h-screen">
+
+<div class="max-w-4xl mx-auto px-5 py-10 sm:py-14">
+
+  <!-- Header -->
+  <header class="flex items-start justify-between gap-4 border-b pb-6" style="border-color:var(--border)">
+    <div>
+      <div class="flex items-center gap-2 text-xs font-mono uppercase tracking-wide" style="color:var(--text-muted)">
+        <span>CSE · XCNQ</span>
+        <span>·</span>
+        <span>CAD</span>
+      </div>
+      <h1 class="font-display text-3xl sm:text-4xl font-semibold mt-1">AIML<span style="color:var(--text-muted)">.CN</span></h1>
+      <p class="text-sm mt-1" style="color:var(--text-muted)">AI/ML Innovations Inc. — biomedical signal processing</p>
+    </div>
+    <div class="text-right shrink-0">
+      <div id="live-price" class="font-mono text-3xl sm:text-4xl font-semibold" style="color:var(--phosphor)">$0.000</div>
+      <div id="live-change" class="font-mono text-sm mt-1"></div>
+    </div>
+  </header>
+
+  <!-- Chart panel -->
+  <section class="mt-6 rounded-lg border p-4 sm:p-6" style="background:var(--panel); border-color:var(--border)">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-sm font-medium" style="color:var(--text-muted)">Closing price</h2>
+      <div class="flex gap-1 text-xs font-mono" id="range-controls">
+        <button data-range="30"  class="range-btn px-2.5 py-1 rounded border" style="border-color:var(--border); color:var(--text-muted)">1M</button>
+        <button data-range="90"  class="range-btn px-2.5 py-1 rounded border" style="border-color:var(--border); color:var(--text-muted)">3M</button>
+        <button data-range="180" class="range-btn px-2.5 py-1 rounded border" style="border-color:var(--border); color:var(--text-muted)">6M</button>
+        <button data-range="365" class="range-btn px-2.5 py-1 rounded border active" style="border-color:var(--border)">1Y</button>
+      </div>
+    </div>
+
+    <div class="relative">
+      <svg id="chart-svg" viewBox="0 0 1000 320" class="w-full h-64 sm:h-80" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="fillGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#4dffaf" stop-opacity="0.25"/>
+            <stop offset="100%" stop-color="#4dffaf" stop-opacity="0"/>
+          </linearGradient>
+          <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="3.2" result="blur"/>
+            <feMerge>
+              <feMergeNode in="blur"/>
+              <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+          </filter>
+        </defs>
+        <g id="grid-lines"></g>
+        <path id="chart-fill" d="" fill="url(#fillGrad)" stroke="none"></path>
+        <path id="chart-path" d="" fill="none" stroke="var(--phosphor)" stroke-width="2" filter="url(#glow)" stroke-linejoin="round" stroke-linecap="round"></path>
+        <circle id="live-dot-circle" class="live-dot" cx="0" cy="0" r="4" fill="var(--phosphor)"></circle>
+        <line id="crosshair-x" x1="0" y1="0" x2="0" y2="320" stroke="var(--grid)" stroke-width="1" visibility="hidden"></line>
+      </svg>
+      <div id="tooltip" class="absolute pointer-events-none text-xs font-mono rounded border px-2.5 py-1.5 hidden"
+           style="background:var(--panel-2); border-color:var(--border); color:var(--text-primary)"></div>
+    </div>
+    <div id="y-labels" class="flex justify-between text-[11px] font-mono mt-2" style="color:var(--text-muted)"></div>
+  </section>
+
+  <!-- Stat strip -->
+  <section class="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-3">
+    <div class="rounded-lg border p-3.5" style="background:var(--panel); border-color:var(--border)">
+      <div class="text-xs" style="color:var(--text-muted)">Open</div>
+      <div id="stat-open" class="font-mono text-lg mt-0.5">—</div>
+    </div>
+    <div class="rounded-lg border p-3.5" style="background:var(--panel); border-color:var(--border)">
+      <div class="text-xs" style="color:var(--text-muted)">Volume</div>
+      <div id="stat-volume" class="font-mono text-lg mt-0.5">—</div>
+    </div>
+    <div class="rounded-lg border p-3.5" style="background:var(--panel); border-color:var(--border)">
+      <div class="text-xs" style="color:var(--text-muted)">52-week range</div>
+      <div id="stat-range" class="font-mono text-lg mt-0.5">—</div>
+    </div>
+    <div class="rounded-lg border p-3.5" style="background:var(--panel); border-color:var(--border)">
+      <div class="text-xs" style="color:var(--text-muted)">Sessions tracked</div>
+      <div id="stat-count" class="font-mono text-lg mt-0.5">—</div>
+    </div>
+  </section>
+
+  <!-- Session log -->
+  <section class="mt-8">
+    <h2 class="text-sm font-medium mb-3" style="color:var(--text-muted)">Recent sessions</h2>
+    <div class="rounded-lg border overflow-x-auto" style="border-color:var(--border)">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="border-b text-xs" style="border-color:var(--border); color:var(--text-muted)">
+            <th class="text-left font-normal py-2.5 px-3.5">Date</th>
+            <th class="text-right font-normal py-2.5 px-3.5 font-mono">Open</th>
+            <th class="text-right font-normal py-2.5 px-3.5 font-mono">High</th>
+            <th class="text-right font-normal py-2.5 px-3.5 font-mono">Low</th>
+            <th class="text-right font-normal py-2.5 px-3.5 font-mono">Close</th>
+            <th class="text-right font-normal py-2.5 px-3.5 font-mono">Volume</th>
+          </tr>
+        </thead>
+        <tbody id="session-table"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer class="mt-10 text-xs font-mono" style="color:var(--text-muted)">
+    Source: Marketstack EOD API, served via /api/eod.
+  </footer>
+
+</div>
+
+<script src="/static/js/script.js" defer></script>
+</body>
+</html>
