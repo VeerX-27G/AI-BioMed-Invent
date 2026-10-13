@@ -97,9 +97,3 @@ To check the data fetch on its own, run `python data.py`. It prints the number o
 - `app.py` runs with `debug=True`, which is for local development only. Use a production server such as gunicorn if you deploy it.
 - Tailwind is loaded from its CDN script, so the page needs an internet connection.
 
-## Ideas for next steps
-
-- Show an error message in the UI when the API call fails, instead of just "N/A"
-- Add other tickers or a symbol search
-- Add volume bars under the price chart
-- Persist fetched data (for example in SQLite) to reduce API usage
